@@ -4,15 +4,12 @@ package cena;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLEventListener;
-import com.jogamp.opengl.util.awt.TextRenderer;
 import com.jogamp.opengl.util.gl2.GLUT;
-import java.awt.Color;
-import java.awt.Font;
 
 public class Cena implements GLEventListener{    
     private float xMin, xMax, yMin, yMax, zMin, zMax;
 
-    public float ang;
+    public float angY=0, angZ =0, direcao=0;
 
     public float size;
 
@@ -33,7 +30,7 @@ public class Cena implements GLEventListener{
     }
     
     public void reset(){
-        ang = 0;
+        angY = 0;
         size = 50;
         mode = GL2.GL_FILL;
     }
@@ -53,6 +50,7 @@ public class Cena implements GLEventListener{
 
         String m = mode == GL2.GL_LINE ? "LINE" : "FILL";
 
+        estrada(gl,glut);
         carro(gl,glut);
 
         gl.glFlush();      
@@ -68,66 +66,90 @@ public class Cena implements GLEventListener{
         pneuTraseiroEsquerda(gl,glut);
         pneuTraseiroDireita(gl,glut);
     }
+    public void estrada(GL2 gl,GLUT glut){
+        gl.glColor3f(0.5f,0.5f,0.5f); //cor do objeto
+        gl.glPushMatrix();
+        gl.glTranslatef(0, 0, -1000);
+        glut.glutSolidCube(1500);
+        gl.glPopMatrix();
+        //-90 angulo
+    }
     public void pneuTraseiroEsquerda(GL2 gl, GLUT glut){
         gl.glColor3f(0,0,0); //cor do objeto
         gl.glPushMatrix();
-        gl.glRotated(ang, 0, 1, 0);
+        gl.glRotated(angY, 0, 1, 0);
+        gl.glRotated(angZ, 0, 0, 1);
         gl.glTranslatef(75, -25, 35);
+        gl.glTranslatef(direcao, 0, 0);
         glut.glutSolidTorus(10, 20, 1000, 50);
         gl.glPopMatrix();
     }
     public void pneuTraseiroDireita(GL2 gl, GLUT glut){
         gl.glColor3f(0,0,0); //cor do objeto
         gl.glPushMatrix();
-        gl.glRotated(ang, 0, 1, 0);
+        gl.glRotated(angY, 0, 1, 0);
+        gl.glRotated(angZ, 0, 0, 1);
         gl.glTranslatef(75, -25, -35);
+        gl.glTranslatef(direcao, 0, 0);
         glut.glutSolidTorus(10, 20, 1000, 50);
         gl.glPopMatrix();
     }
     public void pneuDianteiroEsquerda(GL2 gl, GLUT glut){
         gl.glColor3f(0,0,0); //cor do objeto
         gl.glPushMatrix();
-        gl.glRotated(ang, 0, 1, 0);
+        gl.glRotated(angY, 0, 1, 0);
+        gl.glRotated(angZ, 0, 0, 1);
         gl.glTranslatef(-75, -25, 35);
+        gl.glTranslatef(direcao, 0, 0);
         glut.glutSolidTorus(10, 20, 1000, 50);
         gl.glPopMatrix();
     }
     public void pneuDianteiroDireita(GL2 gl, GLUT glut){
         gl.glColor3f(0,0,0); //cor do objeto
         gl.glPushMatrix();
-        gl.glRotated(ang, 0, 1, 0);
+        gl.glRotated(angY, 0, 1, 0);
+        gl.glRotated(angZ, 0, 0, 1);
         gl.glTranslatef(-75, -25, -35);
+        gl.glTranslatef(direcao, 0, 0);
         glut.glutSolidTorus(10, 20, 1000, 50);
         gl.glPopMatrix();
     }
     public void portaCarro(GL2 gl, GLUT glut){
         gl.glColor3f(0,0,0.8f); //cor do objeto
         gl.glPushMatrix();
-        gl.glRotated(ang, 0, 1, 0);
+        gl.glRotated(angY, 0, 1, 0);
+        gl.glRotated(angZ, 0, 0, 1);
+        gl.glTranslatef(direcao, 0, 0);
         glut.glutSolidCube(size);
         gl.glPopMatrix();
     }
     public void traseiraCarro(GL2 gl, GLUT glut){
         gl.glColor3f(0,0,0.8f); //cor do objeto
         gl.glPushMatrix();
-        gl.glRotated(ang, 0, 1, 0);
+        gl.glRotated(angY, 0, 1, 0);
+        gl.glRotated(angZ, 0, 0, 1);
         gl.glTranslatef(50, 0, 0);
+        gl.glTranslatef(direcao, 0, 0);
         glut.glutSolidCube(size);
         gl.glPopMatrix();
     }
     public void capoCarro(GL2 gl, GLUT glut){
         gl.glColor3f(0,0,0.8f); //cor do objeto
         gl.glPushMatrix();
-        gl.glRotated(ang, 0, 1, 0);
+        gl.glRotated(angY, 0, 1, 0);
+        gl.glRotated(angZ, 0, 0, 1);
         gl.glTranslatef(-50, 0, 0);
+        gl.glTranslatef(direcao, 0, 0);
         glut.glutSolidCube(size);
         gl.glPopMatrix();
     }
     public void cabineCarro(GL2 gl, GLUT glut){
         gl.glColor3f(0,0,0.8f); //cor do objeto
         gl.glPushMatrix();
-        gl.glRotated(ang, 0, 1, 0);
+        gl.glRotated(angY, 0, 1, 0);
+        gl.glRotated(angZ, 0, 0, 1);
         gl.glTranslatef(50, 50, 0);
+        gl.glTranslatef(direcao, 0, 0);
         glut.glutSolidCube(size);
         gl.glPopMatrix();
     }

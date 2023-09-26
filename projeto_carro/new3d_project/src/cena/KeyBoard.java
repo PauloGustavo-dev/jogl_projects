@@ -1,7 +1,6 @@
 package cena;
 import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.newt.event.KeyListener;
-import com.jogamp.opengl.GL2;
 
 public class KeyBoard implements KeyListener{
     private Cena cena;
@@ -18,24 +17,30 @@ public class KeyBoard implements KeyListener{
             System.exit(0);
         switch (e.getKeyChar()) {
 
-            case 'r':
-                System.out.println("chamou Rotacao");
-                cena.ang += 45.0f;
-                break;
+//            case 'a':
+//                cena.direcao+=30;
+//                break;
+//            case 'd':
+//                cena.direcao-=30;
+//                break;
 
         }
         switch (e.getKeyCode()){
             case 151:
-                cena.ang+=2;
+                cena.angY +=2;
+                System.out.println(cena.angY);
                 break;
             case 149:
-                cena.ang-=2;
+                cena.angY -=2;
+                System.out.println(cena.angY);
                 break;
             case 150:
-                System.out.println("cima");
+                cena.angZ +=2;
+                System.out.println(cena.angY);
                 break;
             case 152:
-                System.out.println("baixo");
+                cena.angZ -=2;
+                System.out.println(cena.angY);
                 break;
         }
     }
