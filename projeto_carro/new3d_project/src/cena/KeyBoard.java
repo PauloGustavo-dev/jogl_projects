@@ -17,30 +17,31 @@ public class KeyBoard implements KeyListener{
             System.exit(0);
         switch (e.getKeyChar()) {
 
-//            case 'a':
-//                cena.direcao+=30;
-//                break;
-//            case 'd':
-//                cena.direcao-=30;
-//                break;
+            case 'a':
+                cena.direcao+=10;
+                System.out.println(cena.direcao);
+                break;
+            case 'd':
+                cena.direcao-=10;
+                System.out.println(cena.direcao);
+                break;
+            case 'p':
+                cena.start = !cena.start;
+                break;
 
         }
         switch (e.getKeyCode()){
-            case 151:
-                cena.angY +=2;
-                System.out.println(cena.angY);
+            case 151://seta esquerda
+                cena.direcao-=10;
+                System.out.println(cena.direcao);
                 break;
-            case 149:
-                cena.angY -=2;
-                System.out.println(cena.angY);
+            case 149://seta direita
+                cena.direcao+=10;
+                System.out.println(cena.direcao);
                 break;
-            case 150:
-                cena.angZ +=2;
-                System.out.println(cena.angY);
+            case 150://seta cima
                 break;
-            case 152:
-                cena.angZ -=2;
-                System.out.println(cena.angY);
+            case 152://seta baixo
                 break;
         }
     }

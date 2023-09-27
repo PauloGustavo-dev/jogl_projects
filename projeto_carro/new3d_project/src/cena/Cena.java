@@ -9,9 +9,14 @@ import com.jogamp.opengl.util.gl2.GLUT;
 public class Cena implements GLEventListener{    
     private float xMin, xMax, yMin, yMax, zMin, zMax;
 
-    public float angY=0, angZ =0, direcao=0;
+    public  boolean start = false;
 
-    public float size;
+    public float angY=-90, angZ =-20;
+    public float direcao=0;
+
+    public float movimentoObstaculo=0;
+
+    public float size=50;
 
     public int mode;  
     
@@ -20,19 +25,22 @@ public class Cena implements GLEventListener{
         //dados iniciais da cena        
         GL2 gl = drawable.getGL().getGL2();        
         //Estabelece as coordenadas do SRU (Sistema de Referencia do Universo)
-        xMin = yMin = zMin = -1080;
-        xMax = yMax = zMax = 1920;
-        
-        reset();
+        xMin = yMin = zMin = -1000;
+        xMax = yMax = zMax = 1000;
+
 
         //Habilita o buffer de profundidade
         gl.glEnable(GL2.GL_DEPTH_TEST);
     }
-    
-    public void reset(){
-        angY = 0;
-        size = 50;
-        mode = GL2.GL_FILL;
+    public void play(){
+        if(start){
+            movimentoObstaculo-=3;
+            if (direcao>=(800-(size*2))){
+                direcao-=10;
+            }else if (direcao<=((800-(size*2))*-1)){
+                direcao+=10;
+            }
+        }
     }
 
     @Override
@@ -50,10 +58,23 @@ public class Cena implements GLEventListener{
 
         String m = mode == GL2.GL_LINE ? "LINE" : "FILL";
 
+
+
         estrada(gl,glut);
         carro(gl,glut);
+        obstaculo(gl,glut);
+
+        play();
 
         gl.glFlush();      
+    }
+    public void obstaculo(GL2 gl, GLUT glut){
+        gl.glColor3f(0,0,0f); //cor do objeto
+        gl.glPushMatrix();
+        gl.glTranslatef(0,500,0);
+        gl.glTranslatef(0,movimentoObstaculo,0);
+        glut.glutSolidCube(size);
+        gl.glPopMatrix();
     }
     public void carro(GL2 gl, GLUT glut){
         portaCarro(gl,glut);
@@ -80,8 +101,8 @@ public class Cena implements GLEventListener{
         gl.glRotated(angY, 0, 1, 0);
         gl.glRotated(angZ, 0, 0, 1);
         gl.glTranslatef(75, -25, 35);
-        gl.glTranslatef(direcao, 0, 0);
-        glut.glutSolidTorus(10, 20, 1000, 50);
+        gl.glTranslatef(0, -300, direcao);
+        glut.glutSolidTorus(10, 15, 1000, 50);
         gl.glPopMatrix();
     }
     public void pneuTraseiroDireita(GL2 gl, GLUT glut){
@@ -90,8 +111,8 @@ public class Cena implements GLEventListener{
         gl.glRotated(angY, 0, 1, 0);
         gl.glRotated(angZ, 0, 0, 1);
         gl.glTranslatef(75, -25, -35);
-        gl.glTranslatef(direcao, 0, 0);
-        glut.glutSolidTorus(10, 20, 1000, 50);
+        gl.glTranslatef(0, -300, direcao);
+        glut.glutSolidTorus(10, 15, 1000, 50);
         gl.glPopMatrix();
     }
     public void pneuDianteiroEsquerda(GL2 gl, GLUT glut){
@@ -100,8 +121,8 @@ public class Cena implements GLEventListener{
         gl.glRotated(angY, 0, 1, 0);
         gl.glRotated(angZ, 0, 0, 1);
         gl.glTranslatef(-75, -25, 35);
-        gl.glTranslatef(direcao, 0, 0);
-        glut.glutSolidTorus(10, 20, 1000, 50);
+        gl.glTranslatef(0, -300, direcao);
+        glut.glutSolidTorus(10, 15, 1000, 50);
         gl.glPopMatrix();
     }
     public void pneuDianteiroDireita(GL2 gl, GLUT glut){
@@ -110,8 +131,8 @@ public class Cena implements GLEventListener{
         gl.glRotated(angY, 0, 1, 0);
         gl.glRotated(angZ, 0, 0, 1);
         gl.glTranslatef(-75, -25, -35);
-        gl.glTranslatef(direcao, 0, 0);
-        glut.glutSolidTorus(10, 20, 1000, 50);
+        gl.glTranslatef(0, -300, direcao);
+        glut.glutSolidTorus(10, 15, 1000, 50);
         gl.glPopMatrix();
     }
     public void portaCarro(GL2 gl, GLUT glut){
@@ -119,7 +140,7 @@ public class Cena implements GLEventListener{
         gl.glPushMatrix();
         gl.glRotated(angY, 0, 1, 0);
         gl.glRotated(angZ, 0, 0, 1);
-        gl.glTranslatef(direcao, 0, 0);
+        gl.glTranslatef(0, -300, direcao);
         glut.glutSolidCube(size);
         gl.glPopMatrix();
     }
@@ -129,7 +150,7 @@ public class Cena implements GLEventListener{
         gl.glRotated(angY, 0, 1, 0);
         gl.glRotated(angZ, 0, 0, 1);
         gl.glTranslatef(50, 0, 0);
-        gl.glTranslatef(direcao, 0, 0);
+        gl.glTranslatef(0, -300, direcao);
         glut.glutSolidCube(size);
         gl.glPopMatrix();
     }
@@ -139,17 +160,17 @@ public class Cena implements GLEventListener{
         gl.glRotated(angY, 0, 1, 0);
         gl.glRotated(angZ, 0, 0, 1);
         gl.glTranslatef(-50, 0, 0);
-        gl.glTranslatef(direcao, 0, 0);
+        gl.glTranslatef(0, -300, direcao);
         glut.glutSolidCube(size);
         gl.glPopMatrix();
     }
     public void cabineCarro(GL2 gl, GLUT glut){
-        gl.glColor3f(0,0,0.8f); //cor do objeto
+        gl.glColor3f(0,0,1f); //cor do objeto
         gl.glPushMatrix();
         gl.glRotated(angY, 0, 1, 0);
         gl.glRotated(angZ, 0, 0, 1);
         gl.glTranslatef(50, 50, 0);
-        gl.glTranslatef(direcao, 0, 0);
+        gl.glTranslatef(0, -300, direcao);
         glut.glutSolidCube(size);
         gl.glPopMatrix();
     }
