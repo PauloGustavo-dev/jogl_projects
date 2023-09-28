@@ -19,6 +19,8 @@ public class Cena implements GLEventListener{
     public float inclinacao=0;
     public float direcao=0;
 
+    public final int quantidadeObstaculos= 30;
+
     public int i = 0;
     public boolean colisao= false;
 
@@ -31,7 +33,31 @@ public class Cena implements GLEventListener{
 
     public float size=50;
 
-    public int mode;  
+    public int mode;
+
+    public float converteListaFaixasParaPosicao(Float faixa){
+        float posicaoFaixa=0;
+        if (faixa == 1) {
+            posicaoFaixa = faixa1;
+        } else if(faixa == 2) {
+            posicaoFaixa = faixa2;
+        } else if (faixa == 3) {
+            posicaoFaixa = faixa3;
+        }
+        return posicaoFaixa;
+    }
+    public void metodo(){
+        if(i<quantidadeObstaculos){
+            faixaAvenida= converteListaFaixasParaPosicao(listaFaixasObstaculos.get(i));
+
+            if((listaPosicionamentoY.get(i) * -1) == aproximacaoObstaculo) {
+                if(faixaAvenida == (direcao*-1)){
+                    colisao=true;
+                }
+                i++;
+            }
+        }
+    }
     
     @Override
     public void init(GLAutoDrawable drawable) {
@@ -54,40 +80,51 @@ public class Cena implements GLEventListener{
             } else if (direcao <= -500){
                 direcao = -500;
             }
-            if (listaFaixasObstaculos.get(i) == 1) {
-                faixaAvenida = faixa1;
-            } else if(listaFaixasObstaculos.get(i) == 2) {
-                faixaAvenida = faixa2;
-            } else if (listaFaixasObstaculos.get(i) == 3) {
-                faixaAvenida = faixa3;
-            }
-            System.out.println(listaFaixasObstaculos);
-            if((listaPosicionamentoY.get(i) * -1) == aproximacaoObstaculo) {
-                System.out.println("primeira aproximacao"+aproximacaoObstaculo);
-                if(faixaAvenida == (direcao*-1)){
-                    colisao=true;
-                }
-                i++;
-            }
+
+            metodo();
 
             if (colisao==true){
                 start=false;
-                System.out.println("perdeu");
+
                 colisao=false;
             }
         }
     }
     public List<Float> aleatorizaObstaculos(){
+
         Random random = new Random();
         int faixaAleatoria;
 
-        // Adicione elementos à lista
-
+//        // Adicione elementos à lista
+//        for (int faixaAtualCriada = 1; faixaAtualCriada <= 30; faixaAtualCriada++) {
+//            faixaAleatoria = random.nextInt(3) + 1;
+//            listaFaixasObstaculos.add((float)(faixaAleatoria));
+//            float posicionamento = (600 * faixaAtualCriada) + 100;
+//            listaPosicionamentoY.add(posicionamento);
+//        }
         for (int faixaAtualCriada = 1; faixaAtualCriada <= 30; faixaAtualCriada++) {
             faixaAleatoria = random.nextInt(3) + 1;
-            listaFaixasObstaculos.add((float)(faixaAleatoria));
-            float posicionamento = (600 * faixaAtualCriada) + 100;
-            listaPosicionamentoY.add(posicionamento);
+
+            if(faixaAtualCriada>2){
+                float posicaoFaixaAnterior,posicaoSegundaFaixaAnterior;
+                int faixaAnterior = faixaAtualCriada - 2;
+                int segundaFaixaAnterior =faixaAtualCriada-3;
+                posicaoFaixaAnterior=(listaFaixasObstaculos.get(faixaAnterior)) ;
+                posicaoSegundaFaixaAnterior=(listaFaixasObstaculos.get(segundaFaixaAnterior));
+
+                if (posicaoFaixaAnterior != (float)faixaAleatoria && posicaoSegundaFaixaAnterior!= (float)faixaAleatoria) {
+                    listaFaixasObstaculos.add((float)(faixaAleatoria));
+                    float posicionamento = (600 * faixaAtualCriada) + 100;
+                    listaPosicionamentoY.add(posicionamento);
+                }else {
+                    faixaAtualCriada--;
+                }
+            }else {
+                listaFaixasObstaculos.add((float)(faixaAleatoria));
+                float posicionamento = (600 * faixaAtualCriada) + 100;
+                listaPosicionamentoY.add(posicionamento);
+            }
+
         }
         return listaFaixasObstaculos;
     }
