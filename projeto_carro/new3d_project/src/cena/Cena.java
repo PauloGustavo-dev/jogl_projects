@@ -14,16 +14,20 @@ public class Cena implements GLEventListener{
 
     public  boolean start = false;
 
-    public final float faixa1=500, faixa2=0, faixa3=-500;
+    public final float faixa1=-500, faixa2=0, faixa3=500;
     public float angY=-90, angZ =-20;
     public float inclinacao=0;
     public float direcao=0;
 
+    public int i = 0;
+    public boolean colisao= false;
+
+    public List<Float> listaFaixasObstaculos = new ArrayList<>();
     public List<Float> listaPosicionamentoY = new ArrayList<>();
     public boolean cenarioCriado= false;
 
 //    public boolean curvaEsquerda = false, curvaDireita=false;
-    public float aproximacaoObstaculo =0, posicaoY=0, faixaAvenida=faixa2;
+    public float aproximacaoObstaculo =0, faixaAvenida=0;
 
     public float size=50;
 
@@ -44,10 +48,32 @@ public class Cena implements GLEventListener{
     public void play() {
         if (start) {
             aproximacaoObstaculo -= 10;
+
             if (direcao >= 500) {
                 direcao =500;
             } else if (direcao <= -500){
                 direcao = -500;
+            }
+            if (listaFaixasObstaculos.get(i) == 1) {
+                faixaAvenida = faixa1;
+            } else if(listaFaixasObstaculos.get(i) == 2) {
+                faixaAvenida = faixa2;
+            } else if (listaFaixasObstaculos.get(i) == 3) {
+                faixaAvenida = faixa3;
+            }
+            System.out.println(listaFaixasObstaculos);
+            if((listaPosicionamentoY.get(i) * -1) == aproximacaoObstaculo) {
+                System.out.println("primeira aproximacao"+aproximacaoObstaculo);
+                if(faixaAvenida == (direcao*-1)){
+                    colisao=true;
+                }
+                i++;
+            }
+
+            if (colisao==true){
+                start=false;
+                System.out.println("perdeu");
+                colisao=false;
             }
         }
     }
@@ -57,11 +83,13 @@ public class Cena implements GLEventListener{
 
         // Adicione elementos à lista
 
-        for (int i = 0; i < 30; i++) {
+        for (int faixaAtualCriada = 1; faixaAtualCriada <= 30; faixaAtualCriada++) {
             faixaAleatoria = random.nextInt(3) + 1;
-            listaPosicionamentoY.add((float)(faixaAleatoria));
+            listaFaixasObstaculos.add((float)(faixaAleatoria));
+            float posicionamento = (600 * faixaAtualCriada) + 100;
+            listaPosicionamentoY.add(posicionamento);
         }
-        return listaPosicionamentoY;
+        return listaFaixasObstaculos;
     }
 
     @Override
@@ -79,18 +107,18 @@ public class Cena implements GLEventListener{
         String m = mode == GL2.GL_LINE ? "LINE" : "FILL";
 
 
-        if (listaPosicionamentoY.isEmpty()) {
-            listaPosicionamentoY = aleatorizaObstaculos();
+        if (listaFaixasObstaculos.isEmpty()) {
+            listaFaixasObstaculos = aleatorizaObstaculos();
         }
         if(!cenarioCriado) {
             float distanciaObjeto = 0;
-            for (float faixa : listaPosicionamentoY) {
+            for (float faixa : listaFaixasObstaculos) {
                 distanciaObjeto += 600;
-                if (faixa == 1f) {
+                if (faixa == 1) {
                     faixa = faixa1;
-                } else if (faixa == 2f) {
+                } else if (faixa == 2) {
                     faixa = faixa2;
-                } else if (faixa == 3f) {
+                } else if (faixa == 3) {
                     faixa = faixa3;
                 }
                 obstaculo(gl, glut, distanciaObjeto, faixa);
@@ -98,15 +126,15 @@ public class Cena implements GLEventListener{
         }
         carro(gl,glut);
         estrada(gl,glut);
-
         play();
 
         gl.glFlush();      
     }
-    public void obstaculo(GL2 gl, GLUT glut,float posicaoinicial,float faixaAvenida){
+    public void obstaculo(GL2 gl, GLUT glut,float posicaoinicial,float faixaAvenidaRandomizada){
         gl.glColor3f(0,0,0f); //cor do objeto
         gl.glPushMatrix();
-        gl.glTranslatef(faixaAvenida, posicaoinicial,0);
+        gl.glRotated(angZ,1,0,0);
+        gl.glTranslatef(faixaAvenidaRandomizada, posicaoinicial,0);
         gl.glTranslatef(0, aproximacaoObstaculo,0);
         glut.glutSolidCube(200);
         gl.glPopMatrix();
