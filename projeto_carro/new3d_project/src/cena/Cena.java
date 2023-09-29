@@ -26,15 +26,24 @@ public class Cena implements GLEventListener{
 
     public List<Float> listaFaixasObstaculos = new ArrayList<>();
     public List<Float> listaPosicionamentoY = new ArrayList<>();
-    public boolean cenarioCriado= false;
+    public List<Float> listaPosicionamentoQuadrilhamento = new ArrayList<>();
+    public final float distanciaObjetos = 1000;
 
 //    public boolean curvaEsquerda = false, curvaDireita=false;
-    public float aproximacaoObstaculo =0, faixaAvenida=0;
+    public float aproximacaoObstaculo =0, faixaAvenida=0, cor=0;
 
     public float size=50;
 
     public int mode;
 
+    //gera e armazena em uma lista 0 posicionamento x de cada quadrado da faixa de chegada;
+    public List<Float> posicaoXLinhaDeChegada(){
+        for (int quadrado = 0; quadrado < 15; quadrado++) {
+            float posicao = (-700+(quadrado*100));
+            listaPosicionamentoQuadrilhamento.add(posicao);
+        }
+        return listaPosicionamentoQuadrilhamento;
+    }
     public float converteListaFaixasParaPosicao(Float faixa){
         float posicaoFaixa=0;
         if (faixa == 1) {
@@ -83,9 +92,8 @@ public class Cena implements GLEventListener{
 
             metodo();
 
-            if (colisao==true){
+            if (colisao){
                 start=false;
-
                 colisao=false;
             }
         }
@@ -95,13 +103,6 @@ public class Cena implements GLEventListener{
         Random random = new Random();
         int faixaAleatoria;
 
-//        // Adicione elementos à lista
-//        for (int faixaAtualCriada = 1; faixaAtualCriada <= 30; faixaAtualCriada++) {
-//            faixaAleatoria = random.nextInt(3) + 1;
-//            listaFaixasObstaculos.add((float)(faixaAleatoria));
-//            float posicionamento = (600 * faixaAtualCriada) + 100;
-//            listaPosicionamentoY.add(posicionamento);
-//        }
         for (int faixaAtualCriada = 1; faixaAtualCriada <= 30; faixaAtualCriada++) {
             faixaAleatoria = random.nextInt(3) + 1;
 
@@ -114,14 +115,14 @@ public class Cena implements GLEventListener{
 
                 if (posicaoFaixaAnterior != (float)faixaAleatoria && posicaoSegundaFaixaAnterior!= (float)faixaAleatoria) {
                     listaFaixasObstaculos.add((float)(faixaAleatoria));
-                    float posicionamento = (600 * faixaAtualCriada) + 100;
+                    float posicionamento = (distanciaObjetos * faixaAtualCriada) + 100;
                     listaPosicionamentoY.add(posicionamento);
                 }else {
                     faixaAtualCriada--;
                 }
             }else {
                 listaFaixasObstaculos.add((float)(faixaAleatoria));
-                float posicionamento = (600 * faixaAtualCriada) + 100;
+                float posicionamento = (distanciaObjetos * faixaAtualCriada) + 100;
                 listaPosicionamentoY.add(posicionamento);
             }
 
@@ -147,25 +148,42 @@ public class Cena implements GLEventListener{
         if (listaFaixasObstaculos.isEmpty()) {
             listaFaixasObstaculos = aleatorizaObstaculos();
         }
-        if(!cenarioCriado) {
-            float distanciaObjeto = 0;
-            for (float faixa : listaFaixasObstaculos) {
-                distanciaObjeto += 600;
-                if (faixa == 1) {
-                    faixa = faixa1;
-                } else if (faixa == 2) {
-                    faixa = faixa2;
-                } else if (faixa == 3) {
-                    faixa = faixa3;
-                }
-                obstaculo(gl, glut, distanciaObjeto, faixa);
-            }
+        if(listaPosicionamentoQuadrilhamento.isEmpty()){
+
+            listaPosicionamentoQuadrilhamento = posicaoXLinhaDeChegada();
+        }
+        //verificar codigo como reduzir codigo abaixo;
+
+        float distanciaObjeto = 0;
+        for (float faixa : listaFaixasObstaculos) {
+            distanciaObjeto += distanciaObjetos;
+            faixa=converteListaFaixasParaPosicao(faixa);
+            obstaculo(gl, glut, distanciaObjeto, faixa);
+        }
+        distanciaObjeto += distanciaObjetos;
+
+        //cria linha de chegada apos todos os obstaculos criados
+        for (float x : listaPosicionamentoQuadrilhamento){
+            quadradoLinhaDeChegada(gl,glut,x,distanciaObjeto,cor);
+            if(cor==0){cor=1;}else {cor=0;}
+            distanciaObjeto+=100;
+            quadradoLinhaDeChegada(gl,glut,x,distanciaObjeto,cor);
+            distanciaObjeto-=100;
+            if(x == 700f){cor=0;}
         }
         carro(gl,glut);
         estrada(gl,glut);
         play();
 
         gl.glFlush();      
+    }
+    public void quadradoLinhaDeChegada(GL2 gl, GLUT glut,float posicaoX,float posicaoY,float cor){
+        gl.glColor3f(cor,cor,cor); //cor do objeto
+        gl.glPushMatrix();
+        gl.glTranslatef(posicaoX, posicaoY,-100);
+        gl.glTranslatef(0, aproximacaoObstaculo,0);
+        glut.glutSolidCube(100);
+        gl.glPopMatrix();
     }
     public void obstaculo(GL2 gl, GLUT glut,float posicaoinicial,float faixaAvenidaRandomizada){
         gl.glColor3f(0,0,0f); //cor do objeto
