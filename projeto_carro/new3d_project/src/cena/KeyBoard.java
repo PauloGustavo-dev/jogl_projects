@@ -23,7 +23,7 @@ public class KeyBoard implements KeyListener{
                 } else{
                     cena.direcao+=500;
                 }
-                cena.inclinacao=10;
+                cena.inclinacaoCurva =-10;
                 break;
             case 'd':
                 if (cena.direcao <=-500) {
@@ -31,7 +31,7 @@ public class KeyBoard implements KeyListener{
                 } else{
                     cena.direcao-=500;
                 }
-                cena.inclinacao =-10;
+                cena.inclinacaoCurva =10;
                 break;
             case 'p':
                 cena.start = !cena.start;
@@ -40,25 +40,29 @@ public class KeyBoard implements KeyListener{
         }
 
         switch (e.getKeyCode()){
-            case 151://seta esquerda
+            case 149://seta direita
                 if (cena.direcao <= -500) {
                     cena.direcao =-500;
                 } else{
                     cena.direcao-=500;
                 }
-                cena.inclinacao=-10;
+                cena.inclinacaoCurva =10;
                 break;
-            case 149://seta direita
+            case 151://seta esquerda
                 if (cena.direcao >= 500) {
                     cena.direcao =500;
                 } else{
                     cena.direcao+=500;
                 }
-                cena.inclinacao=10;
+                cena.inclinacaoCurva =-10;
                 break;
             case 150://seta cima
+                cena.inclinacaoCarro+=1;
+                System.out.println(cena.inclinacaoCarro);
                 break;
             case 152://seta baixo
+                cena.inclinacaoCarro-=1;
+                System.out.println(cena.inclinacaoCarro);
                 break;
         }
     }
@@ -68,15 +72,15 @@ public class KeyBoard implements KeyListener{
 
         System.out.println("Key released: " + e.getKeyCode());
         if (e.getKeyChar() == 'a') { // Tecla a
-            cena.inclinacao=0;
+            cena.inclinacaoCurva =0;
         } else if (e.getKeyChar() == 'd') { // Tecla d
-            cena.inclinacao=0;
+            cena.inclinacaoCurva =0;
         }
 
         if (e.getKeyCode() == KeyEvent.VK_LEFT) { // Tecla esquerda
-            cena.inclinacao=0;
+            cena.inclinacaoCurva =0;
         } else if (e.getKeyCode() == KeyEvent.VK_RIGHT) { // Tecla direita
-            cena.inclinacao=0;
+            cena.inclinacaoCurva =0;
         }
     }
 

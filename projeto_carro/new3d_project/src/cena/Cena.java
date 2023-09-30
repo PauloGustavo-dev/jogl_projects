@@ -15,8 +15,8 @@ public class Cena implements GLEventListener{
     public  boolean start = false;
 
     public final float faixa1=-500, faixa2=0, faixa3=500;
-    public float angY=-90, angZ =-20;
-    public float inclinacao=0;
+    public float anguloRotacaoPneu =-90, inclinacaoCarro =90;
+    public float inclinacaoCurva =0;
     public float direcao=0;
 
     public final int quantidadeObstaculos= 30;
@@ -30,9 +30,10 @@ public class Cena implements GLEventListener{
     public final float distanciaObjetos = 1000;
 
 //    public boolean curvaEsquerda = false, curvaDireita=false;
-    public float aproximacaoObstaculo =0, faixaAvenida=0, cor=0;
+    public float aproximacaoObstaculo =0, cor=0;
 
-    public float size=50;
+    public float size=150;
+    public float sizeObstaculo = 200;
 
     public int mode;
 
@@ -46,21 +47,20 @@ public class Cena implements GLEventListener{
     }
     public float converteListaFaixasParaPosicao(Float faixa){
         float posicaoFaixa=0;
-        if (faixa == 1) {
+        if (faixa == 1f) {
             posicaoFaixa = faixa1;
-        } else if(faixa == 2) {
+        } else if(faixa == 2f) {
             posicaoFaixa = faixa2;
-        } else if (faixa == 3) {
+        } else if (faixa == 3f) {
             posicaoFaixa = faixa3;
         }
         return posicaoFaixa;
     }
-    public void metodo(){
+    public void verificaColisao(){
         if(i<quantidadeObstaculos){
-            faixaAvenida= converteListaFaixasParaPosicao(listaFaixasObstaculos.get(i));
-
-            if((listaPosicionamentoY.get(i) * -1) == aproximacaoObstaculo) {
-                if(faixaAvenida == (direcao*-1)){
+            float faixaAvenida= converteListaFaixasParaPosicao(listaFaixasObstaculos.get(i));
+            if((listaPosicionamentoY.get(i))*-1 == aproximacaoObstaculo){
+                if(faixaAvenida == direcao){
                     colisao=true;
                 }
                 i++;
@@ -90,7 +90,7 @@ public class Cena implements GLEventListener{
                 direcao = -500;
             }
 
-            metodo();
+            verificaColisao();
 
             if (colisao){
                 start=false;
@@ -115,14 +115,14 @@ public class Cena implements GLEventListener{
 
                 if (posicaoFaixaAnterior != (float)faixaAleatoria && posicaoSegundaFaixaAnterior!= (float)faixaAleatoria) {
                     listaFaixasObstaculos.add((float)(faixaAleatoria));
-                    float posicionamento = (distanciaObjetos * faixaAtualCriada) + 100;
+                    float posicionamento = (distanciaObjetos * faixaAtualCriada) ;
                     listaPosicionamentoY.add(posicionamento);
                 }else {
                     faixaAtualCriada--;
                 }
             }else {
                 listaFaixasObstaculos.add((float)(faixaAleatoria));
-                float posicionamento = (distanciaObjetos * faixaAtualCriada) + 100;
+                float posicionamento = (distanciaObjetos * faixaAtualCriada);
                 listaPosicionamentoY.add(posicionamento);
             }
 
@@ -143,6 +143,7 @@ public class Cena implements GLEventListener{
         gl.glPolygonMode(GL2.GL_FRONT_AND_BACK, mode);
 
         String m = mode == GL2.GL_LINE ? "LINE" : "FILL";
+
 
 
         if (listaFaixasObstaculos.isEmpty()) {
@@ -180,35 +181,47 @@ public class Cena implements GLEventListener{
     public void quadradoLinhaDeChegada(GL2 gl, GLUT glut,float posicaoX,float posicaoY,float cor){
         gl.glColor3f(cor,cor,cor); //cor do objeto
         gl.glPushMatrix();
-        gl.glTranslatef(posicaoX, posicaoY,-100);
+        gl.glTranslatef(posicaoX, posicaoY,-300);
         gl.glTranslatef(0, aproximacaoObstaculo,0);
         glut.glutSolidCube(100);
         gl.glPopMatrix();
     }
     public void obstaculo(GL2 gl, GLUT glut,float posicaoinicial,float faixaAvenidaRandomizada){
-        gl.glColor3f(0,0,0f); //cor do objeto
+        gl.glColor3f(0,2,0f); //cor do objeto
         gl.glPushMatrix();
-        gl.glRotated(angZ,1,0,0);
-        gl.glTranslatef(faixaAvenidaRandomizada, posicaoinicial,0);
-        gl.glTranslatef(0, aproximacaoObstaculo,0);
-        glut.glutSolidCube(200);
+        gl.glRotated(inclinacaoCarro, 1, 0, 0);
+        gl.glTranslatef(faixaAvenidaRandomizada, 0,-posicaoinicial);
+        gl.glTranslatef(0, 0,-aproximacaoObstaculo);
+        glut.glutSolidCube(sizeObstaculo);
         gl.glPopMatrix();
     }
     public void carro(GL2 gl, GLUT glut){
+        gl.glPushMatrix();
+        gl.glRotated(inclinacaoCarro, 1, 0, 0);
+        gl.glRotated(inclinacaoCurva, 0, 1, 0);
         portaCarro(gl,glut);
         traseiraCarro(gl,glut);
         capoCarro(gl,glut);
         cabineCarro(gl,glut);
+        gl.glPopMatrix();
+
         //pneus
+        gl.glPushMatrix();
+        gl.glRotated(inclinacaoCarro+180, 1, 0, 0);
+        gl.glRotated(-inclinacaoCurva, 0, 1, 0);
+        gl.glRotated(anguloRotacaoPneu,0,1,0);
         pneuDianteiroEsquerda(gl,glut);
         pneuDianteiroDireita(gl,glut);
         pneuTraseiroEsquerda(gl,glut);
         pneuTraseiroDireita(gl,glut);
+        gl.glPopMatrix();
+
     }
     public void estrada(GL2 gl,GLUT glut){
         gl.glColor3f(0.5f,0.5f,0.5f); //cor do objeto
         gl.glPushMatrix();
-        gl.glTranslatef(0, 0, -1000);
+        gl.glRotated(inclinacaoCarro, 1, 0, 0);
+        gl.glTranslatef(0, -1000, 0);
         glut.glutSolidCube(1500);
         gl.glPopMatrix();
         //-90 angulo
@@ -216,87 +229,63 @@ public class Cena implements GLEventListener{
     public void pneuTraseiroEsquerda(GL2 gl, GLUT glut){
         gl.glColor3f(0,0,0); //cor do objeto
         gl.glPushMatrix();
-        gl.glRotated(angY, 0, 1, 0);
-        gl.glRotated(angZ, 0, 0, 1);
-        gl.glRotated(inclinacao, 0, 1, 0);
-        gl.glTranslatef(75, -25, 35);
-        gl.glTranslatef(0, -300, direcao);
-        glut.glutSolidTorus(10, 15, 1000, 50);
+        gl.glTranslatef( -size , - (size / 2) , - (size / 1.5f));
+        gl.glTranslatef(0, -300, -direcao);
+        glut.glutSolidTorus(size/6, size/5, 1000, 50);
         gl.glPopMatrix();
     }
     public void pneuTraseiroDireita(GL2 gl, GLUT glut){
         gl.glColor3f(0,0,0); //cor do objeto
         gl.glPushMatrix();
-        gl.glRotated(angY, 0, 1, 0);
-        gl.glRotated(angZ, 0, 0, 1);
-        gl.glRotated(inclinacao, 0, 1, 0);
-        gl.glTranslatef(75, -25, -35);
-        gl.glTranslatef(0, -300, direcao);
-        glut.glutSolidTorus(10, 15, 1000, 50);
+        gl.glTranslatef( - size , - (size / 2) , (size / 1.5f) );
+        gl.glTranslatef(0, -300, -direcao);
+        glut.glutSolidTorus(size/6, size/5, 1000, 50);
         gl.glPopMatrix();
     }
     public void pneuDianteiroEsquerda(GL2 gl, GLUT glut){
         gl.glColor3f(0,0,0); //cor do objeto
         gl.glPushMatrix();
-        gl.glRotated(angY, 0, 1, 0);
-        gl.glRotated(angZ, 0, 0, 1);
-        gl.glRotated(inclinacao, 0, 1, 0);
-        gl.glTranslatef(-75, -25, 35);
-        gl.glTranslatef(0, -300, direcao);
-        glut.glutSolidTorus(10, 15, 1000, 50);
+        gl.glTranslatef( size , - (size / 2) , - (size / 1.5f) );
+        gl.glTranslatef(0, -300, -direcao);
+        glut.glutSolidTorus(size/6, size/5, 1000, 50);
         gl.glPopMatrix();
     }
     public void pneuDianteiroDireita(GL2 gl, GLUT glut){
         gl.glColor3f(0,0,0); //cor do objeto
         gl.glPushMatrix();
-        gl.glRotated(angY, 0, 1, 0);
-        gl.glRotated(angZ, 0, 0, 1);
-        gl.glRotated(inclinacao, 0, 1, 0);
-        gl.glTranslatef(-75, -25, -35);
-        gl.glTranslatef(0, -300, direcao);
-        glut.glutSolidTorus(10, 15, 1000, 50);
+        gl.glTranslatef( size , - (size / 2) , (size / 1.5f) );
+        gl.glTranslatef(0, -300, -direcao);
+        glut.glutSolidTorus(size/6, size/5, 1000, 50);
         gl.glPopMatrix();
     }
     public void portaCarro(GL2 gl, GLUT glut){
-        gl.glColor3f(0,0,0.8f); //cor do objeto
+        gl.glColor3f(1,1,0.8f); //cor do objeto
         gl.glPushMatrix();
-        gl.glRotated(angY, 0, 1, 0);
-        gl.glRotated(angZ, 0, 0, 1);
-        gl.glRotated(inclinacao, 0, 1, 0);
-        gl.glTranslatef(0, -300, direcao);
+        gl.glTranslatef(direcao, -300, 0);
         glut.glutSolidCube(size);
         gl.glPopMatrix();
     }
     public void traseiraCarro(GL2 gl, GLUT glut){
-        gl.glColor3f(0,0,0.8f); //cor do objeto
+        gl.glColor3f(0,1,0); //cor do objeto
         gl.glPushMatrix();
-        gl.glRotated(angY, 0, 1, 0);
-        gl.glRotated(angZ, 0, 0, 1);
-        gl.glRotated(inclinacao, 0, 1, 0);
-        gl.glTranslatef(50, 0, 0);
-        gl.glTranslatef(0, -300, direcao);
+        gl.glTranslatef(0 ,0 , (size / 2) );
+        gl.glTranslatef(direcao, -300, 0);
         glut.glutSolidCube(size);
         gl.glPopMatrix();
     }
     public void capoCarro(GL2 gl, GLUT glut){
         gl.glColor3f(0,0,0.8f); //cor do objeto
         gl.glPushMatrix();
-        gl.glRotated(angY, 0, 1, 0);
-        gl.glRotated(angZ, 0, 0, 1);
-        gl.glRotated(inclinacao, 0, 1, 0);
-        gl.glTranslatef(-50, 0, 0);
-        gl.glTranslatef(0, -300, direcao);
+        gl.glTranslatef(0 , 0 ,- (size / 2));
+        gl.glTranslatef(direcao, -300, 0);
         glut.glutSolidCube(size);
         gl.glPopMatrix();
     }
     public void cabineCarro(GL2 gl, GLUT glut){
         gl.glColor3f(0,0,1f); //cor do objeto
         gl.glPushMatrix();
-        gl.glRotated(angY, 0, 1, 0);
-        gl.glRotated(angZ, 0, 0, 1);
-        gl.glRotated(inclinacao, 0, 1, 0);
-        gl.glTranslatef(50, 50, 0);
-        gl.glTranslatef(0, -300, direcao);
+        gl.glTranslatef(0 , (size) , (size / 2));
+        gl.glTranslatef(direcao, -300, 0);
         glut.glutSolidCube(size);
         gl.glPopMatrix();
     }
